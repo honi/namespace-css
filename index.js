@@ -23,7 +23,7 @@ function NamespaceCssTransform (opts) {
   if (!this.selector) {
     throw new Error('Need to specify selector in opts or as NAMESPACE_CSS_SELECTOR environment variable');
   }
-  
+
   this.origCss = '';
 }
 
@@ -42,7 +42,7 @@ NamespaceCssTransform.prototype._flush = function (cb) {
     var parsed = parse(self.origCss);
 
     traverse.forEach(parsed, function (node) {
-      if (this.key === 'selectors' && node != '@fontface') {
+      if (this.key === 'selectors' && node[0] != '@fontface' && node[0] != ':root') {
         this.update(node.map(self._namespace.bind(self)));
       }
     });
@@ -52,17 +52,15 @@ NamespaceCssTransform.prototype._flush = function (cb) {
   } catch (err) {
     cb(err);
   }
-
-      
 };
 
 /**
  * Transforms the piped css by namespacing it to given options.
- * 
+ *
  * @name namespaceCss
  * @function
  * @param {String=} file ignored (only here to match common transform signature)
- * @param {Options} opts 
+ * @param {Options} opts
  * @param {String}  opts.selector the selector under which to namespace all css rules
  * @return {TransformStream} the stream into which to pipe original css
  */
@@ -71,5 +69,5 @@ var go = module.exports = function namespaceCss(file, opts) {
   if (typeof file === 'object') {
     opts = file;
   }
-  return new NamespaceCssTransform(opts);  
+  return new NamespaceCssTransform(opts);
 }
